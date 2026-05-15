@@ -1,13 +1,13 @@
-package com.agendly.bytecore;
+package com.bytecore.agendly;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BytecoreApplication {
+public class AgendlyApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(BytecoreApplication.class, args);
+		SpringApplication.run(AgendlyApplication.class, args);
 	}
 
 }

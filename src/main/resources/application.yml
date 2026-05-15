@@ -1,0 +1,19 @@
+# Configuración global de Spring Boot. YAML usa indentación (2 espacios) para anidar.
+# Se divide en secciones: spring (para app), logging (para logs).
+
+spring: # Sección principal de Spring
+  datasource: # Configuración de la fuente de datos (BD)
+    url: jdbc:mysql://100.119.46.24:3306/agendly?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true 
+    driver-class-name: com.mysql.cj.jdbc.Driver  # Driver específico de MySQL 8.x (cj para nueva versión)
+    username: compa  # Usuario de MySQL (cámbialo por seguridad en prod)
+    password: 123456  # Contraseña (nunca commitees esto en Git; usa variables de entorno)
+
+  jpa: # Configuración de JPA/Hibernate (el ORM)
+    database-platform: org.hibernate.dialect.MySQLDialect  # Dialecto para MySQL: traduce SQL a sintaxis MySQL
+    hibernate: # Subconfig de Hibernate
+      ddl-auto: update  # Crea/actualiza tablas automáticamente (dev only; en prod usa 'validate' o migraciones)
+    show-sql: true  # Muestra SQL generado en logs (útil para debug)
+    properties: # Propiedades extras de Hibernate
+      hibernate:
+        format_sql: true  # Formatea SQL en logs para legibilidad
+
