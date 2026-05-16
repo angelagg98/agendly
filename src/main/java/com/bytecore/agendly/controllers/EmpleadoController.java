@@ -1,0 +1,79 @@
+package com.bytecore.agendly.controllers;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.bytecore.agendly.dtos.EmpleadoRequestDTO;
+import com.bytecore.agendly.dtos.EmpleadoResponseDTO;
+import com.bytecore.agendly.services.EmpleadoService;
+
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping("/api/empleados")
+public class EmpleadoController {
+
+    @Autowired
+    private EmpleadoService empleadoService;
+
+    @PostMapping
+    public ResponseEntity<EmpleadoResponseDTO> crear( @Valid @RequestBody EmpleadoRequestDTO requestDTO){  // el @Requestbody comvierte el JSON a objeto
+        EmpleadoResponseDTO creado = empleadoService.crearEmpleado(requestDTO); // llama al service
+        return ResponseEntity.status(HttpStatus.CREATED).body(creado); // comvierte el body o el objeto a un JSON
+    }
+
+    @GetMapping
+    public ResponseEntity<List<EmpleadoResponseDTO>> findAll(){
+        List<EmpleadoResponseDTO> empleados = empleadoService.findAll();
+        return ResponseEntity.ok(empleados);
+    }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<EmpleadoResponseDTO> findById(@PathVariable Long id){
+        EmpleadoResponseDTO empleado = empleadoService.findById(id).orElse(null);
+        if (empleado!= null) {
+            return ResponseEntity.ok(empleado);
+            } else{
+                return ResponseEntity.notFound().build();
+            }
+    }
+
+
+    @PutMapping("{/id}")
+    public ResponseEntity<EmpleadoResponseDTO> update(@PathVariable Long id,@Valid @RequestBody EmpleadoRequestDTO requestDTO){ // @Valid antes de ejecutar el metodo cumpla las reglas que define el RequestDTO
+                                                 //@PathVariable extrae el valor que viene en la url 
+
+        EmpleadoResponseDTO actualizado = empleadoService.update(id, requestDTO).orElse(null);
+        if (actualizado!= null) {
+            return ResponseEntity.ok(actualizado); //ResponseEntity.ok atajo para devolver el 200 ok con un body equivalente a Actualizado            
+        }else{
+            return ResponseEntity.notFound().build(); // buid: se usa cuando la respuesta no tiene body. solo el codigo HTTP
+        }
+    }
+    
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id){
+        if (empleadoService.delete(id)) {
+            return ResponseEntity.noContent().build();
+            
+        }
+        return ResponseEntity.notFound().build();
+    }
+    
+
+
+}

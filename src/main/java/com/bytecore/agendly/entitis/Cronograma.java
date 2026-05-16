@@ -5,7 +5,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "cronograma")
-@Data
+@Data 
 @NoArgsConstructor
 @AllArgsConstructor
 public class Cronograma {

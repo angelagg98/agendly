@@ -26,7 +26,7 @@ public class EmpleadoService {
         empleado.setNumeroDocumento(requestDTO.getNumeroDocumento());
         empleado.setEmail(requestDTO.getEmail());
         Empleado saved = empleadoRepository.save(empleado);
-        return toDTO(saved); // En programación esto se llama el principio DRY — c. ""
+        return toDTO(saved); // En programación esto se llama el principio DRY — c. (no repetir)""
     }
 
     @Transactional
