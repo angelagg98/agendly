@@ -6,9 +6,12 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.bytecore.agendly.dtos.CronogramaResponseDTO;
+import com.bytecore.agendly.dtos.EmpleadoCronogramaDTO;
 import com.bytecore.agendly.dtos.EmpleadoRequestDTO;
 import com.bytecore.agendly.dtos.EmpleadoResponseDTO;
 import com.bytecore.agendly.entitis.Empleado;
+import com.bytecore.agendly.repositories.CronogramaRepository;
 import com.bytecore.agendly.repositories.EmpleadoRepository;
 
 import jakarta.transaction.Transactional;
@@ -18,6 +21,9 @@ public class EmpleadoService {
 
     @Autowired
     private EmpleadoRepository empleadoRepository;
+
+    @Autowired
+    private CronogramaRepository cronogramaRepository; 
 
     @Transactional
     public EmpleadoResponseDTO crearEmpleado(EmpleadoRequestDTO requestDTO) {
@@ -76,4 +82,31 @@ public class EmpleadoService {
                 empleado.getNumeroDocumento(),
                 empleado.getEmail());
     }
+
+    @Transactional   // abre transaccion si falla roolback
+    public EmpleadoCronogramaDTO finByIdConCronogramas(Long id) {
+        Empleado empleado = empleadoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("empleado no encontrado"));
+        List<CronogramaResponseDTO> cronogramas = cronogramaRepository.findByEmpleadoId(id)  // list llama el metodo que agregamos en cronogramaRepository y devuelve una lista de entidades
+                .stream() // convierte la entidad en un flujo para poder procesarla una por una 
+                .map(c -> new CronogramaResponseDTO( // mac por cada cronograma (c) de la lista lo convierte a cronogramaResponseDTo 
+                        c.getId(),
+                        c.getDescripcion(),  
+                        c.getHora(),
+                        c.getFecha(),
+                        c.getEstado(),
+                        c.getEmpleado().getId(),  // accede al objeto empleado dengtro del cronograma para sacar el nombre 
+                        c.getEmpleado().getNombre()))
+
+                .toList(); // convierteel flujo devuelta a una lista 
+
+        return new EmpleadoCronogramaDTO(   
+                empleado.getId(),
+                empleado.getNombre(),
+                empleado.getEmail(),
+                empleado.getNumeroDocumento(),               
+                cronogramas);  // arma el dto final con los datos de empleado y la lista de cronogramas que acabamos de construir lo devuleve como respuesta 
+
+    }
+
 }

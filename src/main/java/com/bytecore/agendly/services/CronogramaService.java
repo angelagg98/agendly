@@ -46,7 +46,7 @@ public class CronogramaService {
     }
 
     @Transactional
-    public Optional<CronogramaResponseDTO> findById(Long id) {
+    public Optional<CronogramaResponseDTO> findById(Long id) {  // maneja el casi no existe 
         Optional<Cronograma> optional = cronogramaRepository.findById(id);
         if (optional.isPresent()) {
             return Optional.of(toDTO(optional.get()));

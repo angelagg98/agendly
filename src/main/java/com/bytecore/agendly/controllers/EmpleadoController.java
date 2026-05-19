@@ -4,17 +4,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import com.bytecore.agendly.dtos.EmpleadoCronogramaDTO;
 import com.bytecore.agendly.dtos.EmpleadoRequestDTO;
 import com.bytecore.agendly.dtos.EmpleadoResponseDTO;
 import com.bytecore.agendly.services.EmpleadoService;
@@ -52,7 +45,7 @@ public class EmpleadoController {
     }
 
 
-    @PutMapping("{/id}")
+    @PutMapping("/{id}")
     public ResponseEntity<EmpleadoResponseDTO> update(@PathVariable Long id,@Valid @RequestBody EmpleadoRequestDTO requestDTO){ // @Valid antes de ejecutar el metodo cumpla las reglas que define el RequestDTO
                                                  //@PathVariable extrae el valor que viene en la url 
 
@@ -72,6 +65,13 @@ public class EmpleadoController {
             
         }
         return ResponseEntity.notFound().build();
+    }
+
+
+    @GetMapping("/{id}/cronogramas")
+    public ResponseEntity<EmpleadoCronogramaDTO> findByIdConCronogramas(@PathVariable Long id){
+        EmpleadoCronogramaDTO resultado = empleadoService.finByIdConCronogramas(id);
+        return ResponseEntity.ok(resultado);
     }
     
 
