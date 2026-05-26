@@ -8,6 +8,7 @@ import lombok.*;
 @Builder
 public class EmpleadoResponseDTO { //es lo que el API devuelve al cliente
 
+    public static Object builder;
     private Long id;
     private String nombre;
     private Long numeroDocumento;

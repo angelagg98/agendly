@@ -2,6 +2,7 @@ package com.bytecore.agendly.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class EmpleadoService {
     private EmpleadoRepository empleadoRepository;
 
     @Autowired
-    private CronogramaRepository cronogramaRepository; 
+    private CronogramaRepository cronogramaRepository;
 
     @Transactional
     public EmpleadoResponseDTO crearEmpleado(EmpleadoRequestDTO requestDTO) {
@@ -83,30 +84,64 @@ public class EmpleadoService {
                 empleado.getEmail());
     }
 
-    @Transactional   // abre transaccion si falla roolback
+    @Transactional // abre transaccion si falla roolback
     public EmpleadoCronogramaDTO finByIdConCronogramas(Long id) {
         Empleado empleado = empleadoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("empleado no encontrado"));
-        List<CronogramaResponseDTO> cronogramas = cronogramaRepository.findByEmpleadoId(id)  // list llama el metodo que agregamos en cronogramaRepository y devuelve una lista de entidades
-                .stream() // convierte la entidad en un flujo para poder procesarla una por una 
-                .map(c -> new CronogramaResponseDTO( // mac por cada cronograma (c) de la lista lo convierte a cronogramaResponseDTo 
+        List<CronogramaResponseDTO> cronogramas = cronogramaRepository.findByEmpleadoId(id) // list llama el metodo que
+                                                                                            // agregamos en
+                                                                                            // cronogramaRepository y
+                                                                                            // devuelve una lista de
+                                                                                            // entidades
+                .stream() // convierte la entidad en un flujo para poder procesarla una por una
+                .map(c -> new CronogramaResponseDTO( // mac por cada cronograma (c) de la lista lo convierte a
+                                                     // cronogramaResponseDTo
                         c.getId(),
-                        c.getDescripcion(),  
+                        c.getDescripcion(),
                         c.getHora(),
                         c.getFecha(),
                         c.getEstado(),
-                        c.getEmpleado().getId(),  // accede al objeto empleado dengtro del cronograma para sacar el nombre 
+                        c.getEmpleado().getId(), // accede al objeto empleado dengtro del cronograma para sacar el
+                                                 // nombre
                         c.getEmpleado().getNombre()))
 
-                .toList(); // convierteel flujo devuelta a una lista 
+                .toList(); // convierteel flujo devuelta a una lista
 
-        return new EmpleadoCronogramaDTO(   
+        return new EmpleadoCronogramaDTO(
                 empleado.getId(),
                 empleado.getNombre(),
                 empleado.getEmail(),
-                empleado.getNumeroDocumento(),               
-                cronogramas);  // arma el dto final con los datos de empleado y la lista de cronogramas que acabamos de construir lo devuleve como respuesta 
+                empleado.getNumeroDocumento(),
+                cronogramas); // arma el dto final con los datos de empleado y la lista de cronogramas que
+                              // acabamos de construir lo devuleve como respuesta
 
+    }
+
+    // buscar empleados por nombres
+    public List<EmpleadoCronogramaDTO> buscarPorNombre(String nombre) {
+        return empleadoRepository.findByNombreContainingIgnoreCase(nombre)
+                .stream() // convierte la lista en un flujo de datos para poder procesar elemento por
+                          // elemento
+                .map(e -> EmpleadoCronogramaDTO.builder()
+                        .id(e.getId())
+                        .nombre(e.getNombre())
+                        .numeroDocumento(e.getNumeroDocumento())
+                        .email(e.getEmail())
+                        .cronogramas(List.of())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    public List<EmpleadoResponseDTO> buscarPorNumeroDocumento(Long numeroDocumento) {
+        return empleadoRepository.findByNumeroDocumento(numeroDocumento)
+                .stream()
+                .map(e -> EmpleadoResponseDTO.builder()
+                        .id(e.getId())
+                        .nombre(e.getNombre())
+                        .email(e.getEmail())
+                        .numeroDocumento(e.getNumeroDocumento())
+                        .build())
+                .collect(Collectors.toList());
     }
 
 }

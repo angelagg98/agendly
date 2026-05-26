@@ -52,7 +52,8 @@ public class CronogramaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CronogramaResponseDTO> update(@PathVariable Long id, @Valid @RequestBody CronogramaRequestDTO requestDTO) {
+    public ResponseEntity<CronogramaResponseDTO> update(@PathVariable Long id,
+            @Valid @RequestBody CronogramaRequestDTO requestDTO) {
         CronogramaResponseDTO actualizado = cronogramaService.update(id, requestDTO).orElse(null);
         if (actualizado != null) {
             return ResponseEntity.ok(actualizado);
@@ -61,14 +62,12 @@ public class CronogramaController {
         }
     }
 
-
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         if (cronogramaService.delete(id)) {
             return ResponseEntity.noContent().build();
-        }return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.noContent().build();
     }
-
- 
 
 }
